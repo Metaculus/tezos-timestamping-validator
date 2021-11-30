@@ -1,6 +1,6 @@
 ## Introduction
 
-This repository contains python scripts for verifications of Metaculus and Community Predictions by using [Tezos]() blockchain and [TzStamp]().
+This repository contains python scripts for verifications of Metaculus and Community Predictions by using [Tezos](https://tezos.com/) blockchain and [TzStamp](https://tzstamp.io/).
 
 
 ## How to use this

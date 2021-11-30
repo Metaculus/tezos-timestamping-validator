@@ -74,6 +74,7 @@ def run(question_id, date_str):
     merkle_root = get_merkle_root_for_date(date_str)
     prediction = get_prediction_for_date(question_id, date_str)
     hashed_prediction = get_hash_for_prediction(question_id, prediction)
+    print(prediction, hashed_prediction)
     audit_trail = get_audit_trail(merkle_root, hashed_prediction)
     verified = verify_audit_trail(hashed_prediction, audit_trail)
 

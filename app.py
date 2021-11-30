@@ -7,8 +7,6 @@ import click
 # date_str = '2021-11-30'
 
 base_url = 'https://metaculus.com/'
-base_url = 'http://127.0.0.1:8000/'
-
 
 def get_merkle_root_for_date(date_str):
     url = base_url + 'api2/tezos/?timestamp=' + date_str

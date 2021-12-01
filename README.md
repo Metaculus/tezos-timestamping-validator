@@ -1,18 +1,19 @@
 ## Introduction
 
-This repository contains python scripts for verifications of Metaculus and Community Predictions by using [Tezos](https://tezos.com/) blockchain and [TzStamp](https://tzstamp.io/).
+This repository contains python scripts for verifications of Metaculus and Community Predictions by using [Tezos](https://tezos.com/) blockchain and [TzStamp](https://tzstamp.io/). See https://www.metaculus.com/tezos/ for mor information.
 
 
 ## How to use this
 
 Tested with python 3.8
 
+- (optional) create a virtual environment and activate it via `python -m venv .venv && source .venv/bin/active`
 - Install requirements.txt `pip install -r requirements.txt`
 - Run `python app.py`
 
-For example 
+For example:
 ```
-python app.py --question_id=1 --date_str='2021-11-30'
+python app.py --question-id 1 --for-date 2021-11-30
 ```
 
 ## How it works
@@ -30,17 +31,15 @@ To verify existence of the prediction, here is what you need to do:
 * Get prediction hash for a given day
 * Perform Merkle Tree audit proof 
 
-We created [github repository](https://github.com/Metaculus/tezos-timestamping-validator) that can take you through the whole process with ease. 
 
 1\. **Verify TzStamp proof**
 
-- download the proof
+- download the proof from our website https://www.metaculus.com/tezos/ for the given day
 - Go to "verify and stamp" section https://tzstamp.io/ 
 - Enter Merkle Root into SHA-256 Hash and select Proof
 - Click verify
 
-example response
-
+Example response:
 ```
 Verified!
 Hash existed at 24/11/2021, 14:10:32
@@ -56,32 +55,32 @@ We tweet unique hash every day at https://twitter.com/tezos_forecasts
 First call api endpoint (`date_str` is in format `YYYY-MM-DD`)
 
 ```
-/api2/questions/{question_id}/prediction-for-date/?date={date_str}
+https://www.metaculus.com/api2/questions/{question_id}/prediction-for-date/?date={date_str}
 ```
 
-Then create hash like this
+Then create hash (using `python`):
 
 ```python
 from hashlib import sha256
 import json
 
-# type can be [CP, MP, #(USER_ID)]
-prediction = {"question_id:type": "forecast_value"}
+prediction = {"question_id:CP": "forecast_value"}
 data = json.dumps(prediction)
 data = data.encode('utf-8')
 hashed_prediction = sha256(data).hexdigest()
 ```
 
+(a JSON format with a space after `:` is used, e.g. `{"x": 3}`)
+
 4\. **Perform Merkle Tree audit proof**
 
 Once you your sha256 have hash, you need to perform Merkle Tree audit proof. You might start verification process by clicking "Start" in the above table. We will return you audit trail, to be used for verification.
 
-Example python code to perform verification looks like this.
+Example python code to perform verification:
 
 ```python
 def compute_hash(data):
-    data = data.encode('utf-8')
-    return sha256(data).hexdigest()
+    return sha256(data.encode('utf-8')).hexdigest()
 
 def verify_audit_trail(chunk_hash, audit_trail):
     """
@@ -124,21 +123,24 @@ You can use any other MerkleTree library for audit proof verification, as long a
 
 ## Example
 
-First question on Metaculus is [Will advanced LIGO announce discovery of gravitational waves by Jan. 31 2016?](http://127.0.0.1:8000/questions/1/will-advanced-ligo-announce-discovery-of-gravitational-waves-by-jan-31-2016/). It's already closed, so it's easy to verify because closing prediction will be part of every Merkle Tree. 
+First question on Metaculus is [Will advanced LIGO announce discovery of gravitational waves by Jan. 31 2016?](http://www.metaculus.com/questions/1/will-advanced-ligo-announce-discovery-of-gravitational-waves-by-jan-31-2016/). It's already closed, so it's easy to verify because closing prediction will be part of every Merkle Tree. 
 
 ![Screenshot from 2021-11-25 13-46-03](https://firebasestorage.googleapis.com/v0/b/firescript-577a2.appspot.com/o/imgs%2Fapp%2Fmypersonaldb%2FDdK9BPmWnG.png?alt=media&token=c9292e2b-b8b9-4a5c-9a76-1772f2328929)
 
-You can see that Community Prediction was 65% at resolution. But since our data are more complex - we store distributions and histogram of individual forecasts resulting data look like this.
+You can see that Community Prediction was 65% at resolution. But since our data are more complex - we store distributions and histogram of individual forecasts - resulting data looks like this.
 
 ```
-{'y': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.23925, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.85021, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.31277, 0.0, 0.0, 0.71616, 0.0, 1.39605, 0.0, 0.0, 0.0, 0.0, 1.08686, 0.0, 0.0, 0.0, 0.0, 0.28917, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'q1': 0.6, 'q2': 0.65, 'q3': 0.7}
+{'y': [...numbers...], 'q1': 0.6, 'q2': 0.65, 'q3': 0.7}
 ```
-
-*note: I'm already using `{"QUESTION_ID:TYPE": PREDICTION}`* format. 
 
 To access this data for a given day you can use our `api` endpoint as described above.
 
-By sha256 hashing the above we get `af04f9fe178f6d5bfcc85b1166154d4cbbb684cb9666711b913be02447a8f44c` 
+By sha256 hashing the following string (encoded as `utf-8`):
+```
+{"1:CP": {"y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.23925, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.85021, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.31277, 0.0, 0.0, 0.71616, 0.0, 1.39605, 0.0, 0.0, 0.0, 0.0, 1.08686, 0.0, 0.0, 0.0, 0.0, 0.28917, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "q1": 0.6, "q2": 0.65, "q3": 0.7}}
+```
+
+we get `af04f9fe178f6d5bfcc85b1166154d4cbbb684cb9666711b913be02447a8f44c`.
 
 Now let's plug in into our interface
 

@@ -14,8 +14,10 @@ BASE_URL = "https://www.metaculus.com/api2"
 def get_merkle_root_for_date(date_str: str) -> str:
     response = requests.get(f"{BASE_URL}/tezos/", params={"timestamp": date_str})
     response.raise_for_status()
-    data = response.json()[0]
-    return data["merkle_root"]
+    data = response.json()
+    if not data:
+        raise RuntimeError("No Metaculus tezos stamp found")
+    return data[0]["merkle_root"]
 
 
 def get_prediction_for_date(question_id: str, date_str: str) -> dict:
@@ -46,7 +48,13 @@ def get_audit_trail(merkle_root: str, hashed_prediction: str):
     response = requests.get(
         url, params={"merkle_root": merkle_root, "hashed_prediction": hashed_prediction}
     )
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except Exception as ex:
+        raise RuntimeError(
+            f"Metaculus wasn't able to proceed with verification. {response.json()}"
+        ) from ex
+
     data = response.json()
     if not data["verified"]:
         raise RuntimeError("Remote verification error")

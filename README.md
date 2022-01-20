@@ -13,7 +13,7 @@ Tested with python 3.8
 
 For example:
 ```
-python app.py --question-id 1 --for-date 2022-01-10
+python app.py --question-id 1 --for-date 2022-01-20
 ```
 
 ## How it works

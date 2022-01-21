@@ -76,7 +76,7 @@ where the `<forecast_values>` is a dict (hashmap) with key-values ordered in the
 {"y": ..., "q1": ..., , "q2": ..., "q3": ..., "low": ..., "high": ...}
 ```
 
-The JSON format is with a space after `:`, e.g. `{"x": 3}`.
+The JSON format is with a space after `:`, e.g. `{"x": 3}`. All numbers should use at maximum 5 decimal places.
 
 4\. **Perform Merkle Tree audit proof**
 

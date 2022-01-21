@@ -1,6 +1,8 @@
 import json
 import logging
+from collections import OrderedDict
 from hashlib import sha256
+from typing import Tuple
 
 import click
 import requests
@@ -11,13 +13,15 @@ logger = logging.getLogger()
 BASE_URL = "https://www.metaculus.com/api2"
 
 
-def get_merkle_root_for_date(date_str: str) -> str:
+def get_merkle_root_for_date(date_str: str) -> Tuple[str, str]:
     response = requests.get(f"{BASE_URL}/tezos/", params={"timestamp": date_str})
     response.raise_for_status()
     data = response.json()
     if not data:
         raise RuntimeError("No Metaculus tezos stamp found")
-    return data[0]["merkle_root"], data[0]["timestamp"][:19]
+    merkle_root = data[0]["merkle_root"]
+    timestamp = data[0]["timestamp"][:19]
+    return merkle_root, timestamp
 
 
 def get_prediction_for_date(question_id: str, date_str: str) -> dict:
@@ -37,9 +41,26 @@ def compute_hash(data: str) -> str:
     return sha256(data.encode("utf-8")).hexdigest()
 
 
+def standardize_data_to_hash(prediction: dict) -> OrderedDict:
+    """This enforces the order of the prediction dict so it's deterministic"""
+    PREDICTION_KEYS = ["y", "q1", "q2", "q3"]
+    OPTIONAL_KEYS = ["low", "high"]
+
+    ordered_key_values = []
+    for key in PREDICTION_KEYS:
+        ordered_key_values.append((key, prediction[key]))
+
+    for key in OPTIONAL_KEYS:
+        if key in prediction:
+            ordered_key_values.append((key, prediction[key]))
+
+    return OrderedDict(ordered_key_values)
+
+
 def get_hash_for_prediction(question_id, prediction, type="CP"):
-    prediction = {f"{question_id}:{type}": prediction}
-    prediction_hash = compute_hash(json.dumps(prediction))
+    ordered = standardize_data_to_hash(prediction)
+    prediction = {f"{question_id}:{type}": ordered}
+    prediction_hash = compute_hash(json.dumps(ordered))
     return prediction_hash
 
 

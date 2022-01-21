@@ -17,7 +17,7 @@ def get_merkle_root_for_date(date_str: str) -> str:
     data = response.json()
     if not data:
         raise RuntimeError("No Metaculus tezos stamp found")
-    return data[0]["merkle_root"]
+    return data[0]["merkle_root"], data[0]["timestamp"][:19]
 
 
 def get_prediction_for_date(question_id: str, date_str: str) -> dict:
@@ -95,8 +95,8 @@ def verify_audit_trail(chunk_hash, audit_trail) -> bool:
     help="Date string in YYYY-MM-DD format (e.g. 2021-11-30)",
 )
 def run(question_id: int, for_date: str):
-    merkle_root = get_merkle_root_for_date(for_date)
-    prediction = get_prediction_for_date(question_id, for_date)
+    merkle_root, timestamp = get_merkle_root_for_date(for_date)
+    prediction = get_prediction_for_date(question_id, timestamp)
     hashed_prediction = get_hash_for_prediction(question_id, prediction)
     print(prediction, hashed_prediction)
     audit_trail = get_audit_trail(merkle_root, hashed_prediction)

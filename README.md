@@ -22,6 +22,8 @@ Everyday we take all standing MP/CP and create [Merkle Tree](https://brilliant.o
 
 Our simple verification interface allows you to generate [audit trail](https://www.codeproject.com/Articles/1176140/Understanding-Merkle-Trees-Why-Use-Them-Who-Uses-T#DataVerification9) and perform verification. You can go through the verification process yourself by following the tutorial below or using our example [implementation](https://github.com/Metaculus/tezos-timestamping-validator).
 
+Note that we are hashing only questions that are part of main Metaculus project https://www.metaculus.com/questions/?project=144. This excludess some tournament or private questions.
+
 ## Verification
 
 To verify existence of the prediction, here is what you need to do:

@@ -10,7 +10,7 @@ import requests
 logging.basicConfig()
 logger = logging.getLogger()
 
-BASE_URL = "https://www.metaculus.com/api2"
+BASE_URL = "https://dev.metaculus.com/api2"
 
 
 def get_merkle_root_for_date(date_str: str) -> Tuple[str, str]:
@@ -57,10 +57,10 @@ def standardize_data_to_hash(prediction: dict) -> OrderedDict:
     return OrderedDict(ordered_key_values)
 
 
-def get_hash_for_prediction(question_id, prediction, type="CP"):
+def get_hash_for_prediction(question_id, prediction, prediction_type="CP"):
     ordered = standardize_data_to_hash(prediction)
-    prediction = {f"{question_id}:{type}": ordered}
-    prediction_hash = compute_hash(json.dumps(ordered))
+    prediction = {f"{question_id}:{prediction_type}": ordered}
+    prediction_hash = compute_hash(json.dumps(prediction))
     return prediction_hash
 
 

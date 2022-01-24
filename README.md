@@ -64,13 +64,19 @@ Then create hash (using `python`):
 from hashlib import sha256
 import json
 
-prediction = {"question_id:CP": "forecast_value"}
+prediction = {"question_id:CP": <forecast_values>}
 data = json.dumps(prediction)
 data = data.encode('utf-8')
 hashed_prediction = sha256(data).hexdigest()
 ```
 
-(a JSON format with a space after `:` is used, e.g. `{"x": 3}`)
+where the `<forecast_values>` is a dict (hashmap) with key-values ordered in the following order `"y", "q1", "q2", "q3"` followed by optional `"low", "high"` for some question types. So e.g.:
+
+```
+{"y": ..., "q1": ..., , "q2": ..., "q3": ..., "low": ..., "high": ...}
+```
+
+The JSON format is with a space after `:`, e.g. `{"x": 3}`. All numbers should use at maximum 5 decimal places.
 
 4\. **Perform Merkle Tree audit proof**
 

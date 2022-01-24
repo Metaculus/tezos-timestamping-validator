@@ -10,7 +10,7 @@ import requests
 logging.basicConfig()
 logger = logging.getLogger()
 
-BASE_URL = "https://dev.metaculus.com/api2"
+BASE_URL = "https://www.metaculus.com/api2"
 
 
 def get_merkle_root_for_date(date_str: str) -> Tuple[str, str]:

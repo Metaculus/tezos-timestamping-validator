@@ -54,7 +54,7 @@ We tweet unique hash every day at https://twitter.com/tezos_forecasts
 
 3\. **Get prediction hash for a given day**
 
-First call api endpoint (`date_str` is in format `YYYY-MM-DD`)
+Find the question of the interest from https://www.metaculus.com/questions/?project=144 and click on the question you want to validate. Extract the `question_id` from the URL, it's the number following `https://www.metaculus.com/questions/`, so e.g. for https://www.metaculus.com/questions/5906/number-confirmed-global-covid-cases-by-2022/ the `question_id` is `5906`. Then call api endpoint (`date_str` is in format `YYYY-MM-DD`)
 
 ```
 https://www.metaculus.com/api2/questions/{question_id}/prediction-for-date/?date={date_str}
